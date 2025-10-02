@@ -46,6 +46,10 @@ sudo chown -R $SERVICE_USER:$SERVICE_USER $PROJECT_DIR
 
 # ========= STEP 7: GUNICORN SERVICE =========
 echo "[*] Setup Gunicorn systemd service..."
+
+echo "[*] Hentikan Gunicorn lama di port 8000 kalau ada..."
+sudo fuser -k 8000/tcp || true
+
 sudo tee /etc/systemd/system/$PROJECT_NAME.service > /dev/null <<EOL
 [Unit]
 Description=Gunicorn service for $PROJECT_NAME
