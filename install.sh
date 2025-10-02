@@ -5,7 +5,7 @@ PROJECT_NAME="na_website"
 PROJECT_DIR="/opt/$PROJECT_NAME"
 GITHUB_REPO="https://github.com/ManikTzyyy/plumnet"
 PYTHON_VERSION="python3"
-SERVICE_USER=$(whoami)   # otomatis pake user yg jalanin script
+SERVICE_USER="www-data"
 
 # ========= STEP 1: INSTALL DEPENDENCIES =========
 echo "[*] Install Python, pip, venv, dan dependencies sistem..."
@@ -39,6 +39,10 @@ echo "[*] Jalankan migration Django..."
 $PROJECT_DIR/venv/bin/python manage.py makemigrations
 $PROJECT_DIR/venv/bin/python manage.py migrate
 $PROJECT_DIR/venv/bin/python manage.py collectstatic --noinput
+
+# ========= FIX PERMISSIONS =========
+echo "[*] Perbaiki permission untuk database dan project..."
+sudo chown -R $SERVICE_USER:$SERVICE_USER $PROJECT_DIR
 
 # ========= STEP 7: GUNICORN SERVICE =========
 echo "[*] Setup Gunicorn systemd service..."
