@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ========= CONFIG =========
-PROJECT_NAME="network_automation"
+PROJECT_NAME="na_website"
 PROJECT_DIR="/opt/$PROJECT_NAME"
 GITHUB_REPO="https://github.com/ManikTzyyy/plumnet"
 PYTHON_VERSION="python3"
@@ -51,7 +51,7 @@ After=network.target
 User=$SERVICE_USER
 Group=$SERVICE_USER
 WorkingDirectory=$PROJECT_DIR
-ExecStart=$PROJECT_DIR/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 $PROJECT_NAME.wsgi:application
+ExecStart=$PROJECT_DIR/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 mysite.wsgi:application
 Restart=always
 
 [Install]
