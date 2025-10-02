@@ -21,13 +21,13 @@ cd $PROJECT_DIR
 
 # ========= STEP 3: VIRTUALENV =========
 echo "[*] Buat virtual environment..."
-$PYTHON_VERSION -m venv venv
-source venv/bin/activate
+sudo $PYTHON_VERSION -m venv $PROJECT_DIR/venv
+sudo chown -R $SERVICE_USER:$SERVICE_USER $PROJECT_DIR
 
 # ========= STEP 4: INSTALL REQUIREMENTS =========
 echo "[*] Install dependencies Python..."
-pip install --upgrade pip
-pip install -r requirements.txt
+$PROJECT_DIR/venv/bin/pip install --upgrade pip
+$PROJECT_DIR/venv/bin/pip install -r requirements.txt
 
 # ========= STEP 5: SETUP .env =========
 echo "[*] Setup file .env..."
@@ -38,9 +38,9 @@ fi
 
 # ========= STEP 6: DJANGO MIGRATIONS =========
 echo "[*] Jalankan migration Django..."
-python manage.py makemigrations
-python manage.py migrate
-python manage.py collectstatic --noinput
+$PROJECT_DIR/venv/bin/python manage.py makemigrations
+$PROJECT_DIR/venv/bin/python manage.py migrate
+$PROJECT_DIR/venv/bin/python manage.py collectstatic --noinput
 
 # ========= STEP 7: GUNICORN SERVICE =========
 echo "[*] Setup Gunicorn systemd service..."
@@ -53,7 +53,7 @@ After=network.target
 User=$SERVICE_USER
 Group=$SERVICE_USER
 WorkingDirectory=$PROJECT_DIR
-ExecStart=$PROJECT_DIR/venv/bin/gunicorn --workers 3 --bind unix:$PROJECT_DIR/$PROJECT_NAME.sock $PROJECT_NAME.wsgi:application
+ExecStart=$PROJECT_DIR/venv/bin/gunicorn --workers 3 --bind unix:$PROJECT_DIR/$PROJECT_NAME.sock mysite.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
@@ -62,7 +62,6 @@ EOL
 sudo systemctl daemon-reload
 sudo systemctl enable $PROJECT_NAME
 sudo systemctl restart $PROJECT_NAME
-
 
 # ========= STEP 8: SCHEDULER SERVICE =========
 echo "[*] Setup Django Scheduler systemd service..."
@@ -114,7 +113,5 @@ EOL
 sudo systemctl disable $PROJECT_NAME-bot
 sudo systemctl restart $PROJECT_NAME-bot
 echo ">>> Bot service dibuat, aktifkan manual pakai: sudo systemctl enable $PROJECT_NAME-bot && sudo systemctl start $PROJECT_NAME-bot"
-
-
 
 echo "[*] Instalasi selesai!"
