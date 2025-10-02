@@ -5,13 +5,12 @@ PROJECT_NAME="network_automation"
 PROJECT_DIR="/opt/$PROJECT_NAME"
 GITHUB_REPO="https://github.com/ManikTzyyy/plumnet"
 PYTHON_VERSION="python3"
-SERVICE_USER="www-data"
+SERVICE_USER=$(whoami)   # otomatis pake user yg jalanin script
 
 # ========= STEP 1: INSTALL DEPENDENCIES =========
 echo "[*] Install Python, pip, venv, dan dependencies sistem..."
 sudo apt update
-sudo apt install -y $PYTHON_VERSION $PYTHON_VERSION-venv $PYTHON_VERSION-pip git \
-    nginx curl
+sudo apt install -y $PYTHON_VERSION $PYTHON_VERSION-venv $PYTHON_VERSION-pip git curl
 
 # ========= STEP 2: CLONE PROJECT =========
 echo "[*] Clone project dari GitHub..."
@@ -21,13 +20,12 @@ cd $PROJECT_DIR
 
 # ========= STEP 3: VIRTUALENV =========
 echo "[*] Buat virtual environment..."
-sudo $PYTHON_VERSION -m venv $PROJECT_DIR/venv
-sudo chown -R $SERVICE_USER:$SERVICE_USER $PROJECT_DIR
+$PYTHON_VERSION -m venv $PROJECT_DIR/venv
 
 # ========= STEP 4: INSTALL REQUIREMENTS =========
 echo "[*] Install dependencies Python..."
 $PROJECT_DIR/venv/bin/pip install --upgrade pip
-$PROJECT_DIR/venv/bin/pip install -r requirements.txt
+$PROJECT_DIR/venv/bin/pip install -r requirements.txt --break-system-packages
 
 # ========= STEP 5: SETUP .env =========
 echo "[*] Setup file .env..."
@@ -53,7 +51,8 @@ After=network.target
 User=$SERVICE_USER
 Group=$SERVICE_USER
 WorkingDirectory=$PROJECT_DIR
-ExecStart=$PROJECT_DIR/venv/bin/gunicorn --workers 3 --bind unix:$PROJECT_DIR/$PROJECT_NAME.sock mysite.wsgi:application
+ExecStart=$PROJECT_DIR/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 $PROJECT_NAME.wsgi:application
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
