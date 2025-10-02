@@ -111,6 +111,7 @@ EOL
 
 sudo systemctl disable $PROJECT_NAME-bot
 sudo systemctl restart $PROJECT_NAME-bot
+sudo systemctl stop $PROJECT_NAME-bot
 echo ">>> Bot service dibuat, aktifkan manual pakai: sudo systemctl enable $PROJECT_NAME-bot && sudo systemctl start $PROJECT_NAME-bot"
 
 echo "[*] Instalasi selesai!"
